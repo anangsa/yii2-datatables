@@ -13,6 +13,7 @@ use yii\base\Action;
 use yii\base\InvalidConfigException;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveQuery;
+use yii\db\Query;
 
 /**
  * Action for processing ajax requests from DataTables.
