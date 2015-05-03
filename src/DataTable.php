@@ -119,10 +119,11 @@ class DataTable extends Widget
 
     protected function initColumns()
     {
-        if (isset($this->columns)) {
+        if ($this->columns !== null) {
+            $columns = [];
             foreach ($this->columns as $key => $value) {
                 if (is_string($value)) {
-                    $this->columns[$key] = ['data' => $value, 'title' => Inflector::camel2words($value)];
+                    $columns[$key] = ['data' => $value, 'title' => Inflector::camel2words($value)];
                 }
                 if (isset($value['type'])) {
                     if ($value['type'] == 'link') {
@@ -131,9 +132,10 @@ class DataTable extends Widget
                 }
                 if (isset($value['class'])) {
                     $column = \Yii::createObject($value);
-                    $this->columns[$key] = $column;
+                    $columns[$key] = $column;
                 }
             }
+            $this->columns = $columns;
         }
     }
 
