@@ -88,7 +88,7 @@ class DataTableAction extends Action
      * @param array $order
      * @return ActiveQuery
      */
-    public function applyOrder(ActiveQuery $query, $columns, $order)
+    public function applyOrder($query, $columns, $order)
     {
         if ($this->applyOrder !== null) {
             return call_user_func($this->applyOrder, $query, $columns, $order);
@@ -108,17 +108,26 @@ class DataTableAction extends Action
      * @return ActiveQuery
      * @throws InvalidConfigException
      */
-    public function applyFilter(ActiveQuery $query, $columns, $search)
+    public function applyFilter($query, $columns, $search)
     {
         if ($this->applyFilter !== null) {
             return call_user_func($this->applyFilter, $query, $columns, $search);
         }
 
+        if ($query instanceof ActiveQuery) {
         /** @var \yii\db\ActiveRecord $modelClass */
-        $modelClass = $query->modelClass;
-        $schema = $modelClass::getTableSchema()->columns;
+            $modelClass = $query->modelClass;
+            $schema = $modelClass::getTableSchema()->columns;
+        }
+        elseif ($query instanceof Query) {
+          $schema = $query->select;
+          foreach ($schema as $index => $select) {
+            $schema[$index] = preg_replace('/.+ AS /i','',$select);
+          }
+        }
+
         foreach ($columns as $column) {
-            if ($column['searchable'] == 'true' && array_key_exists($column['data'], $schema) !== false) {
+            if ($column['searchable'] == 'true' && ( ($query instanceof ActiveQuery && array_key_exists($column['data'], $schema) !== false) || ($query instanceof Query && in_array($column['data'], $schema) !== false))) {
                 $value = empty($search['value']) ? $column['search']['value'] : $search['value'];
                 $query->orFilterWhere(['like', $column['data'], $value]);
             }
