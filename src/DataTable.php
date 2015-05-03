@@ -99,7 +99,7 @@ class DataTable extends Widget
     public function init()
     {
         parent::init();
-        DataTableAsset::register($this->view);
+        DataTableAsset::register($this->getView());
         $this->initColumns();
     }
 
@@ -109,7 +109,7 @@ class DataTable extends Widget
         echo Html::beginTag('table', ArrayHelper::merge(['id' => $id], $this->tableOptions));
 
         echo Html::endTag('table');
-        $this->view->registerJs('jQuery("#' . $id . '").DataTable(' . Json::encode($this->getParams()) . ');');
+        $this->getView()->registerJs('jQuery("#' . $id . '").DataTable(' . Json::encode($this->getParams()) . ');');
     }
 
     protected function getParams()
